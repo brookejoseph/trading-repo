@@ -1,8 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import type { TradingRecommendation } from "@/lib/alpha-vantage"
 import { AlertTriangle, Clock, Target } from "lucide-react"
 
@@ -18,140 +16,141 @@ export function StockTradingRecommendations({ recommendation, currentPrice }: St
   const getRecommendationColor = () => {
     switch (recommendation.recommendation) {
       case "Strong Buy":
-        return "bg-green-500 text-white"
+        return "bg-green-600 text-white"
       case "Buy":
-        return "bg-green-400 text-white"
+        return "bg-green-500 text-white"
       case "Hold":
-        return "bg-yellow-400 text-black"
+        return "bg-yellow-500 text-black"
       case "Sell":
-        return "bg-red-400 text-white"
-      case "Strong Sell":
         return "bg-red-500 text-white"
+      case "Strong Sell":
+        return "bg-red-600 text-white"
       default:
-        return "bg-gray-400 text-white"
+        return "bg-zinc-400 text-white"
     }
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle>Trading Recommendations</CardTitle>
-          <div className={`px-3 py-1 rounded-full text-sm font-bold ${getRecommendationColor()}`}>
-            {recommendation.recommendation}
+    <div className="border border-zinc-200 bg-white">
+      <div className="bg-zinc-100 p-4 border-b border-zinc-200 flex items-center justify-between">
+        <h3 className="font-bold uppercase text-sm tracking-wider">Trading Recommendation</h3>
+        <div className={`px-3 py-1 text-xs font-bold ${getRecommendationColor()}`}>
+          {recommendation.recommendation}
+        </div>
+      </div>
+      <div className="p-4">
+        <div className="mb-4">
+          <div className="inline-flex bg-zinc-100 p-1 rounded">
+            <button
+              onClick={() => setActiveTab("overview")}
+              className={`px-4 py-1 text-sm font-semibold ${
+                activeTab === "overview" ? "bg-white shadow-sm" : "text-zinc-600"
+              }`}
+            >
+              Price Levels
+            </button>
+            <button
+              onClick={() => setActiveTab("details")}
+              className={`px-4 py-1 text-sm font-semibold ${
+                activeTab === "details" ? "bg-white shadow-sm" : "text-zinc-600"
+              }`}
+            >
+              Strategy Details
+            </button>
           </div>
         </div>
-      </CardHeader>
-      <CardContent>
-        <Tabs defaultValue="overview" onValueChange={(value) => setActiveTab(value as "overview" | "details")}>
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="overview">Price Levels</TabsTrigger>
-            <TabsTrigger value="details">Strategy Details</TabsTrigger>
-          </TabsList>
 
-          <TabsContent value="overview" className="pt-4">
-            <div className="space-y-6">
-              <div className="grid grid-cols-2 gap-4">
-                <Card className="border-2 border-primary">
-                  <CardContent className="p-4">
-                    <h3 className="text-sm font-medium text-muted-foreground mb-1">Entry Price</h3>
-                    <p className="text-xl font-bold">${recommendation.entryPrice.toFixed(2)}</p>
-                    <p className="text-xs text-muted-foreground mt-1">Current: ${currentPrice.toFixed(2)}</p>
-                  </CardContent>
-                </Card>
-                <Card className="border-2 border-destructive">
-                  <CardContent className="p-4">
-                    <h3 className="text-sm font-medium text-muted-foreground mb-1">Stop Loss</h3>
-                    <p className="text-xl font-bold">${recommendation.stopLoss.toFixed(2)}</p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {Math.abs(
-                        ((recommendation.stopLoss - recommendation.entryPrice) / recommendation.entryPrice) * 100,
-                      ).toFixed(2)}
-                      % from entry
-                    </p>
-                  </CardContent>
-                </Card>
+        {activeTab === "overview" ? (
+          <div className="space-y-6">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="border border-black p-4">
+                <h3 className="text-sm text-zinc-500 mb-1">Entry Price</h3>
+                <p className="text-lg font-bold">${recommendation.entryPrice.toFixed(2)}</p>
+                <p className="text-xs text-zinc-500 mt-1">Current: ${currentPrice.toFixed(2)}</p>
               </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <Card className="border-2 border-green-500">
-                  <CardContent className="p-4">
-                    <h3 className="text-sm font-medium text-muted-foreground mb-1">Take Profit 1</h3>
-                    <p className="text-xl font-bold">${recommendation.takeProfit1.toFixed(2)}</p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {Math.abs(
-                        ((recommendation.takeProfit1 - recommendation.entryPrice) / recommendation.entryPrice) * 100,
-                      ).toFixed(2)}
-                      % from entry
-                    </p>
-                  </CardContent>
-                </Card>
-                <Card className="border-2 border-green-600">
-                  <CardContent className="p-4">
-                    <h3 className="text-sm font-medium text-muted-foreground mb-1">Take Profit 2</h3>
-                    <p className="text-xl font-bold">${recommendation.takeProfit2.toFixed(2)}</p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {Math.abs(
-                        ((recommendation.takeProfit2 - recommendation.entryPrice) / recommendation.entryPrice) * 100,
-                      ).toFixed(2)}
-                      % from entry
-                    </p>
-                  </CardContent>
-                </Card>
-              </div>
-
-              <div className="flex items-center justify-between p-4 rounded-lg border">
-                <div className="flex items-center gap-2">
-                  <Target className="h-5 w-5 text-primary" />
-                  <span className="font-medium">Risk/Reward Ratio:</span>
-                </div>
-                <span className="font-bold">1:{recommendation.riskRewardRatio}</span>
-              </div>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="details" className="pt-4">
-            <div className="space-y-6">
-              <div className="p-4 rounded-lg border">
-                <div className="flex items-center gap-2 mb-2">
-                  <Clock className="h-5 w-5 text-primary" />
-                  <h3 className="font-medium">Time Frame</h3>
-                </div>
-                <p>{recommendation.timeFrame}</p>
-              </div>
-
-              <div className="p-4 rounded-lg border">
-                <div className="flex items-center gap-2 mb-2">
-                  <Target className="h-5 w-5 text-primary" />
-                  <h3 className="font-medium">Strategy</h3>
-                </div>
-                <p>{recommendation.strategy}</p>
-              </div>
-
-              <div className="space-y-4">
-                <div className="p-4 rounded-lg border">
-                  <h3 className="font-medium mb-2">Technical Analysis</h3>
-                  <p className="text-sm">{recommendation.technicalReason}</p>
-                </div>
-
-                <div className="p-4 rounded-lg border">
-                  <h3 className="font-medium mb-2">Fundamental Analysis</h3>
-                  <p className="text-sm">{recommendation.fundamentalReason}</p>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-center p-4 rounded-lg border bg-muted">
-                <AlertTriangle className="h-5 w-5 text-yellow-500 mr-2" />
-                <p className="text-sm text-muted-foreground">
-                  These recommendations are generated algorithmically and should not be considered financial advice.
-                  Always do your own research before making investment decisions.
+              <div className="border border-zinc-200 p-4">
+                <h3 className="text-sm text-zinc-500 mb-1">Stop Loss</h3>
+                <p className="text-lg font-bold">${recommendation.stopLoss.toFixed(2)}</p>
+                <p className="text-xs text-zinc-500 mt-1">
+                  {Math.abs(
+                    ((recommendation.stopLoss - recommendation.entryPrice) / recommendation.entryPrice) * 100,
+                  ).toFixed(2)}
+                  % from entry
                 </p>
               </div>
             </div>
-          </TabsContent>
-        </Tabs>
-      </CardContent>
-    </Card>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="border border-zinc-200 p-4">
+                <h3 className="text-sm text-zinc-500 mb-1">Take Profit 1</h3>
+                <p className="text-lg font-bold">${recommendation.takeProfit1.toFixed(2)}</p>
+                <p className="text-xs text-zinc-500 mt-1">
+                  {Math.abs(
+                    ((recommendation.takeProfit1 - recommendation.entryPrice) / recommendation.entryPrice) * 100,
+                  ).toFixed(2)}
+                  % from entry
+                </p>
+              </div>
+              <div className="border border-zinc-200 p-4">
+                <h3 className="text-sm text-zinc-500 mb-1">Take Profit 2</h3>
+                <p className="text-lg font-bold">${recommendation.takeProfit2.toFixed(2)}</p>
+                <p className="text-xs text-zinc-500 mt-1">
+                  {Math.abs(
+                    ((recommendation.takeProfit2 - recommendation.entryPrice) / recommendation.entryPrice) * 100,
+                  ).toFixed(2)}
+                  % from entry
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between p-4 border border-zinc-100">
+              <div className="flex items-center gap-2">
+                <Target className="h-5 w-5 text-black" />
+                <span className="font-medium">Risk/Reward Ratio:</span>
+              </div>
+              <span className="font-bold">1:{recommendation.riskRewardRatio}</span>
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-6">
+            <div className="p-4 border border-zinc-200">
+              <div className="flex items-center gap-2 mb-2">
+                <Clock className="h-5 w-5 text-black" />
+                <h3 className="font-medium">Time Frame</h3>
+              </div>
+              <p>{recommendation.timeFrame}</p>
+            </div>
+
+            <div className="p-4 border border-zinc-200">
+              <div className="flex items-center gap-2 mb-2">
+                <Target className="h-5 w-5 text-black" />
+                <h3 className="font-medium">Strategy</h3>
+              </div>
+              <p>{recommendation.strategy}</p>
+            </div>
+
+            <div className="space-y-4">
+              <div className="p-4 border border-zinc-200">
+                <h3 className="font-medium mb-2">Technical Analysis</h3>
+                <p className="text-sm">{recommendation.technicalReason}</p>
+              </div>
+
+              <div className="p-4 border border-zinc-200">
+                <h3 className="font-medium mb-2">Fundamental Analysis</h3>
+                <p className="text-sm">{recommendation.fundamentalReason}</p>
+              </div>
+            </div>
+
+            <div className="flex items-center p-4 border border-zinc-100 bg-zinc-50">
+              <AlertTriangle className="h-5 w-5 text-yellow-500 mr-2 flex-shrink-0" />
+              <p className="text-sm text-zinc-600">
+                These recommendations are generated algorithmically and should not be considered financial advice.
+                Always do your own research before making investment decisions.
+              </p>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
   )
 }
-

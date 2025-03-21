@@ -1,11 +1,9 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Search } from "lucide-react"
-
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 
@@ -35,22 +33,21 @@ export function SearchForm() {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-2xl font-semibold">Search for a Stock</h2>
+      <h2 className="text-2xl font-bold mb-6">Search for a Stock</h2>
       <form onSubmit={handleSubmit} className="flex w-full max-w-lg space-x-2">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
           <Input
             type="text"
             placeholder="Enter ticker symbol (e.g., AAPL)"
-            className="pl-9"
+            className="pl-9 border-black bg-transparent font-serif"
             value={symbol}
             onChange={(e) => setSymbol(e.target.value)}
           />
         </div>
-        <Button type="submit">Search</Button>
+        <Button type="submit" className="bg-black hover:bg-zinc-800 text-white font-semibold">Search</Button>
       </form>
-      {error && <p className="text-destructive text-sm">{error}</p>}
+      {error && <p className="text-red-600 text-sm">{error}</p>}
     </div>
   )
 }
-
