@@ -1,6 +1,8 @@
+"use client"
 import Link from "next/link"
-import { SearchForm } from "@/components/search-form"
-import { ArrowRight, BarChart3, Target, DollarSign, TrendingUp, Search, AlertCircle, LineChart, Zap, ChevronRight } from "lucide-react"
+import { ArrowRight, TrendingUp, Search, ChevronRight } from "lucide-react"
+import { useState } from "react"
+import { useRouter } from "next/navigation"
 
 export default function HomePage() {
   return (
@@ -36,21 +38,9 @@ export default function HomePage() {
                 Access professional-grade market data, unusual options activity, and institutional-level analytics.
               </p>
               
-              {/* Search Box */}
+              {/* Search Box - Using SearchForm instead of custom implementation */}
               <div className="max-w-lg mx-auto">
-                <div className="flex bg-white border border-zinc-300 rounded-md overflow-hidden shadow-sm">
-                  <div className="flex-1 flex items-center">
-                    <Search className="h-5 w-5 text-zinc-400 ml-4" />
-                    <input 
-                      type="text"
-                      placeholder="Enter ticker symbol (e.g., AAPL)" 
-                      className="w-full bg-transparent px-3 py-3 text-zinc-800 placeholder:text-zinc-400 focus:outline-none"
-                    />
-                  </div>
-                  <button className="bg-amber-700 text-white px-6 py-3 font-medium hover:bg-amber-800 transition-colors">
-                    Search
-                  </button>
-                </div>
+                <SearchBar />
                 <div className="mt-3 flex justify-center gap-4 text-sm text-zinc-500">
                   <span>Try:</span>
                   <div className="flex gap-3">
@@ -198,5 +188,54 @@ export default function HomePage() {
         </div>
       </footer>
     </div>
+  )
+}
+
+// Custom SearchBar component with the same functionality as the original SearchForm
+
+function SearchBar() {
+  const [symbol, setSymbol] = useState("")
+  const [error, setError] = useState("")
+  const router = useRouter()
+
+  const handleSubmit = (e: any) => {
+    e.preventDefault()
+
+    if (!symbol.trim()) {
+      setError("Please enter a stock symbol")
+      return
+    }
+
+    // Basic validation for ticker symbol format
+    const tickerRegex = /^[A-Z0-9.]{1,5}$/i
+    if (!tickerRegex.test(symbol.trim())) {
+      setError("Please enter a valid stock symbol (1-5 alphanumeric characters)")
+      return
+    }
+
+    setError("")
+    router.push(`/stock/${symbol.trim().toUpperCase()}`)
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="flex bg-white border border-zinc-300 rounded-md overflow-hidden shadow-sm">
+      <div className="flex-1 flex items-center">
+        <Search className="h-5 w-5 text-zinc-400 ml-4" />
+        <input 
+          type="text"
+          placeholder="Enter ticker symbol (e.g., AAPL)" 
+          className="w-full bg-transparent px-3 py-3 text-zinc-800 placeholder:text-zinc-400 focus:outline-none"
+          value={symbol}
+          onChange={(e) => setSymbol(e.target.value)}
+        />
+      </div>
+      <button 
+        type="submit" 
+        className="bg-amber-700 text-white px-6 py-3 font-medium hover:bg-amber-800 transition-colors"
+      >
+        Search
+      </button>
+      {error && <p className="absolute mt-12 text-red-600 text-sm">{error}</p>}
+    </form>
   )
 }

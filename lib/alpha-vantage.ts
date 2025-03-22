@@ -494,3 +494,158 @@ function calculateATR(data: { high: number; low: number; close: number }[]): num
   return atr
 }
 
+
+// Add this to your existing lib/alpha-vantage.ts file 
+
+// Interface for unusual options data
+export interface UnusualOptionData {
+  symbol: string;
+  contractName: string;
+  strike: number;
+  lastPrice: number;
+  change: number;
+  percentChange: number;
+  volume: number;
+  openInterest: number;
+  volumeToOIRatio: number;
+  contractType: "call" | "put";
+  expirationDate: string;
+}
+
+// Get unusual options data from Alpha Vantage API
+export async function getUnusualOptionsData(): Promise<UnusualOptionData[]> {
+  const apiKey = process.env.ALPHA_VANTAGE_API_KEY;
+  
+  try {
+    // This would ideally fetch from an options-specific endpoint at Alpha Vantage
+    // However, Alpha Vantage's free tier doesn't provide real-time options data
+    // So we'll need to use a different approach for production
+
+    // For a real implementation, you would:
+    // 1. Fetch options data for multiple symbols
+    // 2. Calculate the volume to open interest ratio
+    // 3. Filter for unusual activity (typically vol/OI > 1.0)
+    // 4. Sort by most unusual first
+
+    // Example API call if Alpha Vantage offered options endpoint:
+    // const url = `https://www.alphavantage.co/query?function=OPTIONS_CHAIN&symbols=AAPL,MSFT,TSLA,NVDA,AMZN&apikey=${apiKey}`;
+    // const response = await fetch(url, { next: { revalidate: 1800 } }); // Cache for 30 minutes
+    
+    // Placeholder for mock data
+    // In a production environment, you could use a dedicated options data API
+    const unusualOptionsData: UnusualOptionData[] = [
+      {
+        symbol: "AAPL",
+        contractName: "AAPL 2023-12-15 C180",
+        strike: 180,
+        lastPrice: 3.25,
+        change: 0.75,
+        percentChange: 30.0,
+        volume: 15000,
+        openInterest: 5000,
+        volumeToOIRatio: 3.0,
+        contractType: "call",
+        expirationDate: "2023-12-15",
+      },
+      {
+        symbol: "MSFT",
+        contractName: "MSFT 2023-12-15 P350",
+        strike: 350,
+        lastPrice: 4.2,
+        change: 1.1,
+        percentChange: 35.5,
+        volume: 8500,
+        openInterest: 2200,
+        volumeToOIRatio: 3.86,
+        contractType: "put",
+        expirationDate: "2023-12-15",
+      },
+      {
+        symbol: "TSLA",
+        contractName: "TSLA 2023-12-22 C250",
+        strike: 250,
+        lastPrice: 5.75,
+        change: -0.25,
+        percentChange: -4.17,
+        volume: 12000,
+        openInterest: 3000,
+        volumeToOIRatio: 4.0,
+        contractType: "call",
+        expirationDate: "2023-12-22",
+      },
+      {
+        symbol: "NVDA",
+        contractName: "NVDA 2023-12-15 C500",
+        strike: 500,
+        lastPrice: 8.5,
+        change: 2.25,
+        percentChange: 36.0,
+        volume: 9500,
+        openInterest: 1800,
+        volumeToOIRatio: 5.28,
+        contractType: "call",
+        expirationDate: "2023-12-15",
+      },
+      {
+        symbol: "AMZN",
+        contractName: "AMZN 2023-12-22 P140",
+        strike: 140,
+        lastPrice: 2.15,
+        change: 0.65,
+        percentChange: 43.33,
+        volume: 7200,
+        openInterest: 1500,
+        volumeToOIRatio: 4.8,
+        contractType: "put",
+        expirationDate: "2023-12-22",
+      },
+      // Add new data for more symbols
+      {
+        symbol: "META",
+        contractName: "META 2023-12-15 C350",
+        strike: 350,
+        lastPrice: 6.40,
+        change: 1.85,
+        percentChange: 40.66,
+        volume: 7800,
+        openInterest: 1950,
+        volumeToOIRatio: 4.0,
+        contractType: "call",
+        expirationDate: "2023-12-15",
+      },
+      {
+        symbol: "AMD",
+        contractName: "AMD 2023-12-22 C125",
+        strike: 125,
+        lastPrice: 3.15,
+        change: 0.95,
+        percentChange: 43.18,
+        volume: 6500,
+        openInterest: 1600,
+        volumeToOIRatio: 4.06,
+        contractType: "call",
+        expirationDate: "2023-12-22",
+      },
+      {
+        symbol: "GME",
+        contractName: "GME 2023-12-15 P15",
+        strike: 15,
+        lastPrice: 0.85,
+        change: 0.30,
+        percentChange: 54.55,
+        volume: 4200,
+        openInterest: 750,
+        volumeToOIRatio: 5.60,
+        contractType: "put",
+        expirationDate: "2023-12-15",
+      }
+    ];
+
+    // Sort by volume to open interest ratio (most unusual first)
+    return unusualOptionsData.sort((a, b) => b.volumeToOIRatio - a.volumeToOIRatio);
+    
+  } catch (error) {
+    console.error('Error fetching unusual options data:', error);
+    throw new Error('Failed to fetch unusual options data');
+  }
+}
